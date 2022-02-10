@@ -31,7 +31,7 @@ import org.matsim.core.scenario.ScenarioUtils;
  * @author nagel
  *
  */
-public class RunMatsim {
+public class RunMatsim1 {
 
 	public static void main(String[] args) {
 
@@ -67,11 +67,38 @@ public class RunMatsim {
 		
 		controler.run();
 	}
-
+	// the new defined AbstractModule can also be packaged and move it to other places
 	private static class MyAbstractModule extends AbstractModule {
 		@Override
 		public void install() {
+			this.bind(Simulation.class).to( SimulationDefaultImpl.class );
+			this.bind(Helper.class).to( HelperDefaultImpl.class );
+		}
+	}
 
+	interface Helper{
+		void help();
+	}
+	interface Simulation{
+		void doStep();
+	}
+	static class HelperDefaultImpl implements Helper{
+		public void help(){
+			System.out.println( this.getClass().getSimpleName() + "is helping");
+		}
+	}
+	static class SimulationDefaultImpl implements Simulation{
+		private final Helper helper;
+		@Inject
+		SimulationDefaultImpl(Helper helper){
+			this.helper = helper;
+		}
+		//@Inject private Helper helper;
+
+		public void doStep(){
+			System.out.println("entering" + this.getClass().getSimpleName());
+			helper.help();
+			System.out.println("leaving" + this.getClass().getSimpleName());
 		}
 	}
 
